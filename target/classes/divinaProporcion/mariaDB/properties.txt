@@ -1,3 +1,0 @@
-jdbc:mariadb://10.10.32.8:3306/divinaProporcion
-root
-abc123.
