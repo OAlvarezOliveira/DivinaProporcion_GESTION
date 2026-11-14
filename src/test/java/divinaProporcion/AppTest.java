@@ -1,4 +1,4 @@
-package divinaProporcion.mariaDB;
+package divinaProporcion;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
