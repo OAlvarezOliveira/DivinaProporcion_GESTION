@@ -1,5 +1,8 @@
 package divinaProporcion.modelo;
 
+/**
+ * Variedad de uva (tabla {@code variedad}).
+ */
 public class Variedad {
 
 	private int id;

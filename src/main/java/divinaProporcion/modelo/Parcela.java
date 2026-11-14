@@ -1,5 +1,8 @@
 package divinaProporcion.modelo;
 
+/**
+ * Parcela de viñedo (tabla {@code parcela}). Pertenece a una {@link Variedad}.
+ */
 public class Parcela {
 
 	private int id;

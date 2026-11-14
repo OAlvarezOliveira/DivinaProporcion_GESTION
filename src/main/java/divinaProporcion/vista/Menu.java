@@ -7,10 +7,17 @@ import divinaProporcion.modelo.Color;
 
 import java.util.Scanner;
 
+/**
+ * Interfaz de consola. Es la única clase que lee del teclado y que imprime:
+ * los controladores solo devuelven texto.
+ */
 public class Menu {
 
 	private static Scanner teclado = new Scanner(System.in);
 
+	/**
+	 * Muestra el menú principal y atiende las opciones hasta que se elige salir.
+	 */
 	public static void menu() {
 		int opcionMenu = -1;
 		do {
@@ -181,6 +188,7 @@ public class Menu {
 					double cantidad = Double.parseDouble(teclado.nextLine().trim());
 					System.out.print("Graduación (vacío si no hay): ");
 					String texto = teclado.nextLine().trim();
+					// Opcional: si se deja vacío queda null, que la BD guarda como NULL
 					Double graduacion = null;
 					if (!texto.isEmpty()) {
 						graduacion = Double.parseDouble(texto);
@@ -205,6 +213,7 @@ public class Menu {
 					double cantidad = Double.parseDouble(teclado.nextLine().trim());
 					System.out.print("Graduación (vacío si no hay): ");
 					String texto = teclado.nextLine().trim();
+					// Opcional: si se deja vacío queda null, que la BD guarda como NULL
 					Double graduacion = null;
 					if (!texto.isEmpty()) {
 						graduacion = Double.parseDouble(texto);
