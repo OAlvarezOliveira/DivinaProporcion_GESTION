@@ -1,0 +1,16 @@
+[
+  { "parcela": "El Cerrado", "anualidad": 2025, "cantidad": 28100.5, "graduacion": 14.5 },
+  { "parcela": "Los Pozos", "anualidad": 2025, "cantidad": 19800.0, "graduacion": 14.9 },
+  { "parcela": "El Carrascal", "anualidad": 2025, "cantidad": 16500.0 },
+  { "parcela": "Valhondo", "anualidad": 2025, "cantidad": 4800.0, "graduacion": 12.4 },
+  { "parcela": "El Cerrado", "anualidad": 2024, "cantidad": 26800.0, "graduacion": 14.4 },
+  { "parcela": "Valhondo", "anualidad": 2025, "cantidad": 4800.0, "graduacion": 12.4 },
+  { "parcela": "Inventada", "anualidad": 2025, "cantidad": 1000.0, "graduacion": 13.0 },
+  { "parcela": "", "anualidad": 2025, "cantidad": 1000.0, "graduacion": 13.0 },
+  { "anualidad": 2025, "cantidad": 1000.0, "graduacion": 13.0 },
+  { "parcela": "Los Cantos", "anualidad": 2025, "cantidad": -50.0, "graduacion": 12.0 },
+  { "parcela": "Los Cantos", "anualidad": 2025, "cantidad": 21500.0, "graduacion": -3.0 },
+  { "parcela": "Los Cantos", "anualidad": 2025, "cantidad": 21500.0, "graduacion": 0 },
+  { "parcela": "La Cañada", "anualidad": 1800, "cantidad": 7900.25, "graduacion": 13.9 },
+  { "parcela": "La Cañada", "anualidad": 2025, "cantidad": 7900.25, "graduacion": 13.9 }
+]

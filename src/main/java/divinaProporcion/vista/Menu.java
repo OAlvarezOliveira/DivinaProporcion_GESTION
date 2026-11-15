@@ -4,6 +4,7 @@ import divinaProporcion.controlador.ControladorCosecha;
 import divinaProporcion.controlador.ControladorParcela;
 import divinaProporcion.controlador.ControladorVariedad;
 import divinaProporcion.io.ExportadorJson;
+import divinaProporcion.io.ImportadorJson;
 import divinaProporcion.io.ImportadorVendimia;
 import divinaProporcion.modelo.Color;
 
@@ -19,7 +20,8 @@ public class Menu {
 
 	private static Scanner teclado = new Scanner(System.in);
 	private static final String RUTA_VENDIMIA = "datos/vendimia.csv";
-	private static final String RUTA_EXPORTACION = "datos/cosechas.json";
+	private static final String RUTA_EXPORTACION = "datos/cosechas_exportadas.json";
+	private static final String RUTA_IMPORTACION = "datos/cosechas_importar.json";
 
 	/**
 	 * Muestra el menú principal y atiende las opciones hasta que se elige salir.
@@ -33,11 +35,12 @@ public class Menu {
 			System.out.println("1. GESTION PARCELAS");
 			System.out.println("2. GESTION COSECHAS");
 			System.out.println("3. GESTION VARIEDADES");
-			System.out.println("4. IMPORTAR VENDIMIA (PRODUCTOS)");
-			System.out.println("5. EXPORTAR PRODUCCION");
-			System.out.println("6. GENERAR INFORME DE VENTAS ANUAL");
-			System.out.println("7. GENERAR BACKUP DATOS");
-			System.out.println("8. SALIR");
+			System.out.println("4. IMPORTAR VENDIMIA (CSV)");
+			System.out.println("5. EXPORTAR COSECHAS (JSON)");
+			System.out.println("6. IMPORTAR COSECHAS (JSON)");
+			System.out.println("7. GENERAR INFORME DE VENTAS ANUAL");
+			System.out.println("8. GENERAR BACKUP DATOS");
+			System.out.println("9. SALIR");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -65,19 +68,22 @@ public class Menu {
 				exportarProduccion(); 
 				break;
 			case 6:
-				generarInformeVentas();
+				importarCosechasJson();
 				break;
 			case 7:
-				backupDB();
+				generarInformeVentas();
 				break;
 			case 8:
+				backupDB();
+				break;
+			case 9:
 				System.out.println("EJECUCION FINALIZADA");
 				break;
 			default:
 				System.out.println("Opción no válida. Inténtalo de nuevo.");
 				break;
 			}
-		} while (opcionMenu != 8);
+		} while (opcionMenu != 9);
 	}
 
 	// ==========================================
@@ -345,6 +351,20 @@ public class Menu {
 			}
 		} catch (IOException e) {
 			System.out.println("No se pudo escribir en el fichero: " + e.getMessage());
+		} catch (SQLException e) {
+			System.out.println("Error de BD: " + e.getMessage());
+		}
+	}
+
+	private static void importarCosechasJson() {
+		try {
+			if (ImportadorJson.leer(RUTA_IMPORTACION)) {
+				System.out.println("Importación completada.");
+			} else {
+				System.out.println("La importación se canceló.");
+			}
+		} catch (IOException e) {
+			System.out.println("No se pudo leer el fichero: " + e.getMessage());
 		} catch (SQLException e) {
 			System.out.println("Error de BD: " + e.getMessage());
 		}
