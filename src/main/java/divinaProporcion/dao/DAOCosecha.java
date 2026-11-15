@@ -38,13 +38,23 @@ public class DAOCosecha {
 
 	private static final String SQL_CREAR_COSECHA = "INSERT INTO cosecha (anualidad,id_parcela,cantidad,graduacion) VALUES (?,?,?,?)";
 	// Acaba en espacio a propósito: después se le pega "ORDER BY" o "WHERE"
-	private static final String SQL_BASE_COSECHA ="SELECT" + "    c.id AS idCosecha,"
-			+ "    c.anualidad AS anualidadCosecha," + "    c.cantidad AS cantidadCosecha,"
-			+ "    c.graduacion AS graduacionCosecha," + "    p.id AS idParcela," + "    p.nombre AS nombreParcela,"
-			+ "    p.extension AS extensionParcela," + "    p.ubicacion AS ubicacionParcela,"
-			+ "    v.id AS idVariedad," + "    v.nombre AS nombreVariedad," + "    v.color AS colorVariedad"
-			+ " FROM cosecha AS c" + " JOIN parcela AS p ON c.id_parcela = p.id"
-			+ " JOIN variedad AS v ON p.id_variedad = v.id ";
+	private static final String SQL_BASE_COSECHA = """
+		    SELECT 
+		        c.id AS idCosecha,
+		        c.anualidad AS anualidadCosecha,
+		        c.cantidad AS cantidadCosecha,
+		        c.graduacion AS graduacionCosecha,
+		        p.id AS idParcela,
+		        p.nombre AS nombreParcela,
+		        p.extension AS extensionParcela,
+		        p.ubicacion AS ubicacionParcela,
+		        v.id AS idVariedad,
+		        v.nombre AS nombreVariedad,
+		        v.color AS colorVariedad
+		    FROM cosecha AS c 
+		    JOIN parcela AS p ON c.id_parcela = p.id 
+		    JOIN variedad AS v ON p.id_variedad = v.id 
+		    """;
 
 	private static final String SQL_EDITAR_COSECHA = "UPDATE cosecha SET anualidad = ?, id_parcela = ?, cantidad = ? ,graduacion = ? WHERE id = ?";
 	private static final String SQL_BORRAR_COSECHA = "DELETE FROM cosecha WHERE id = ?";
@@ -144,7 +154,7 @@ public class DAOCosecha {
 	 * @return la cosecha construida con los datos de esa fila
 	 * @throws SQLException si falla la lectura de alguna columna
 	 */
-	private static Cosecha mapearCosecha(ResultSet rs) throws SQLException {
+	 static Cosecha mapearCosecha(ResultSet rs) throws SQLException {
 
 		int idCosecha = rs.getInt("idCosecha");
 		int anualidadCosecha = rs.getInt("anualidadCosecha");
