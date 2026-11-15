@@ -1,12 +1,14 @@
 package divinaProporcion.modelo;
 
+import java.io.Serializable;
+
 /**
  * Cosecha de una parcela en un año (tabla {@code cosecha}).
  * <p>
  * La graduación es {@link Double} (y no {@code double}) porque puede ser nula si no se midió.
  * </p>
  */
-public class Cosecha {
+public class Cosecha implements Serializable{
 
 	private int id;
 	private int anualidad;

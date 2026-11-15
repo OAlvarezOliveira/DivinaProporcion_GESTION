@@ -1,9 +1,11 @@
 package divinaProporcion.modelo;
 
+import java.io.Serializable;
+
 /**
  * Parcela de viñedo (tabla {@code parcela}). Pertenece a una {@link Variedad}.
  */
-public class Parcela {
+public class Parcela implements Serializable{
 
 	private int id;
 	private String nombre;

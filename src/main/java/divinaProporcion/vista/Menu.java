@@ -3,6 +3,7 @@ package divinaProporcion.vista;
 import divinaProporcion.controlador.ControladorCosecha;
 import divinaProporcion.controlador.ControladorParcela;
 import divinaProporcion.controlador.ControladorVariedad;
+import divinaProporcion.io.BackupBinario;
 import divinaProporcion.io.ExportadorJson;
 import divinaProporcion.io.ImportadorJson;
 import divinaProporcion.io.ImportadorVendimia;
@@ -22,6 +23,7 @@ public class Menu {
 	private static final String RUTA_VENDIMIA = "datos/vendimia.csv";
 	private static final String RUTA_EXPORTACION = "datos/cosechas_exportadas.json";
 	private static final String RUTA_IMPORTACION = "datos/cosechas_importar.json";
+	private static final String RUTA_BACKUP = "datos/backup.bin";
 
 	/**
 	 * Muestra el menú principal y atiende las opciones hasta que se elige salir.
@@ -375,6 +377,16 @@ public class Menu {
 	}
 
 	private static void backupDB() {
-		System.out.println("backUp DB");
+		try {
+			if (BackupBinario.guardar(RUTA_BACKUP)) {
+				System.out.println("Backup generado.");
+			} else {
+				System.out.println("No se pudo generar el backup.");
+			}
+		} catch (IOException e) {
+			System.out.println("No se pudo escribir el backup: " + e.getMessage());
+		} catch (SQLException e) {
+			System.out.println("Error de BD: " + e.getMessage());
+		}
 	}
 }

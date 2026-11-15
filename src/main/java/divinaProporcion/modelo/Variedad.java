@@ -1,9 +1,11 @@
 package divinaProporcion.modelo;
 
+import java.io.Serializable;
+
 /**
  * Variedad de uva (tabla {@code variedad}).
  */
-public class Variedad {
+public class Variedad implements Serializable{
 
 	private int id;
 	private String nombre;
