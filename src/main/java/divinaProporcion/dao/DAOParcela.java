@@ -30,18 +30,21 @@ import divinaProporcion.modelo.Variedad;
 public class DAOParcela {
 
 	// Acaba en espacio a propósito: después se le pega "ORDER BY" o "WHERE"
-	private static final String SQL_BASE_PARCELA ="SELECT p.id AS idParcela, p.nombre AS nombreParcela, p.extension AS extensionParcela, p.ubicacion AS ubicacionParcela, "
+	private static final String SQL_BASE_PARCELA = "SELECT p.id AS idParcela, p.nombre AS nombreParcela, p.extension AS extensionParcela, p.ubicacion AS ubicacionParcela, "
 			+ "v.id AS idVariedad, v.nombre AS nombreVariedad, v.color AS colorVariedad " + "FROM parcela AS p "
 			+ "JOIN variedad AS v ON p.id_variedad = v.id ";
 
 	private static final String SQL_FILTRAR_NOMBRE = SQL_BASE_PARCELA + "WHERE p.nombre LIKE ? ORDER BY p.nombre";
 	private static final String SQL_FILTRAR_UBICACION = SQL_BASE_PARCELA + "WHERE p.ubicacion LIKE ? ORDER BY p.nombre";
-	private static final String SQL_FILTRAR_EXTENSION = SQL_BASE_PARCELA + "WHERE p.extension >= ? ORDER BY p.extension";
+	private static final String SQL_FILTRAR_EXTENSION = SQL_BASE_PARCELA
+			+ "WHERE p.extension >= ? ORDER BY p.extension";
 	private static final String SQL_FILTRAR_VARIEDAD = SQL_BASE_PARCELA + "WHERE v.id = ? ORDER BY p.nombre";
 
 	private static final String SQL_CREAR_PARCELA = "INSERT INTO parcela (nombre,extension,id_variedad,ubicacion) VALUES (?,?,?,?)";
 	private static final String SQL_EDITAR_PARCELA = "UPDATE parcela SET nombre = ?, extension = ?, id_variedad = ?, ubicacion = ? WHERE id = ?";
 	private static final String SQL_BORRAR_PARCELA = "DELETE FROM parcela WHERE id = ?";
+
+	private static final String SQL_BUSCAR_ID = "SELECT id FROM parcela WHERE nombre =?";
 
 	/**
 	 * Inserta una nueva parcela. El {@code id} del objeto se ignora porque lo
@@ -213,8 +216,8 @@ public class DAOParcela {
 	/**
 	 * Convierte la fila actual del {@link ResultSet} en una {@link Parcela} con su
 	 * {@link Variedad}. Las columnas se leen por los alias de la consulta base
-	 * ({@code SQL_BASE_PARCELA}), por lo que solo sirve para resultados que la usen.
-	 * No avanza el cursor: de eso se encarga quien llama.
+	 * ({@code SQL_BASE_PARCELA}), por lo que solo sirve para resultados que la
+	 * usen. No avanza el cursor: de eso se encarga quien llama.
 	 *
 	 * @param rs resultado ya colocado en la fila que se quiere leer
 	 * @return la parcela construida con los datos de esa fila
@@ -281,6 +284,29 @@ public class DAOParcela {
 			int filas = ps.executeUpdate();
 			return filas > 0;
 		}
+	}
+
+	public static Integer buscarIdPorNombre(String nombre) throws SQLException {
+
+		Integer idParcela;
+
+		try (Connection conexion = ConexionDB.conectaDB();
+				PreparedStatement ps = conexion.prepareStatement(SQL_BUSCAR_ID)) {
+
+			ps.setString(1, nombre);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+
+				idParcela = rs.getInt("id");
+			} else {
+
+				idParcela = null;
+			}
+
+		}
+
+		return idParcela;
+
 	}
 
 }

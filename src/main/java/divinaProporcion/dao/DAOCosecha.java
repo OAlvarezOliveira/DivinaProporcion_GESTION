@@ -82,6 +82,31 @@ public class DAOCosecha {
 		}
 
 	}
+	
+	//Para una importación con transacción, o entran todas o ninguna
+	public static boolean crearCosecha(Connection conexion, Cosecha c) throws SQLException{
+		
+		
+		try ( PreparedStatement ps = conexion.prepareStatement(SQL_CREAR_COSECHA)) {
+
+			ps.setInt(1, c.getAnualidad());
+			ps.setInt(2, c.getParcela().getId());
+			ps.setDouble(3, c.getCantidad());
+
+			// graduacion es opcional: con null, setDouble falla, así que uso setNull
+			if (c.getGraduacion() == null) {
+				ps.setNull(4, Types.DECIMAL);
+			} else {
+				ps.setDouble(4, c.getGraduacion());
+			}
+
+			int filas = ps.executeUpdate();
+			return filas > 0;
+		}
+		
+		
+		
+	}
 
 	/**
 	 * Obtiene todas las cosechas, cada una con su parcela y la variedad de esta,

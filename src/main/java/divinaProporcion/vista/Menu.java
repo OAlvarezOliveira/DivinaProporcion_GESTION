@@ -3,8 +3,11 @@ package divinaProporcion.vista;
 import divinaProporcion.controlador.ControladorCosecha;
 import divinaProporcion.controlador.ControladorParcela;
 import divinaProporcion.controlador.ControladorVariedad;
+import divinaProporcion.io.ImportadorVendimia;
 import divinaProporcion.modelo.Color;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
@@ -14,6 +17,7 @@ import java.util.Scanner;
 public class Menu {
 
 	private static Scanner teclado = new Scanner(System.in);
+	private static final String RUTA_VENDIMIA = "datos/vendimia.csv";
 
 	/**
 	 * Muestra el menú principal y atiende las opciones hasta que se elige salir.
@@ -317,7 +321,17 @@ public class Menu {
 	// ==========================================
 
 	private static void importarVendimia() {
-		System.out.println("Importar Vendimia");
+		try {
+			if (ImportadorVendimia.leer(RUTA_VENDIMIA)) {
+				System.out.println("Importación completada.");
+			} else {
+				System.out.println("La importación se canceló.");
+			}
+		} catch (IOException e) {
+			System.out.println("No se pudo leer el fichero: " + e.getMessage());
+		} catch (SQLException e) {
+			System.out.println("Error de BD: " + e.getMessage());
+		}
 	}
 
 	private static void exportarProduccion() {
