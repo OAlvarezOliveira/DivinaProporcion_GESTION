@@ -3,6 +3,7 @@ package divinaProporcion.vista;
 import divinaProporcion.controlador.ControladorCosecha;
 import divinaProporcion.controlador.ControladorParcela;
 import divinaProporcion.controlador.ControladorVariedad;
+import divinaProporcion.io.ExportadorJson;
 import divinaProporcion.io.ImportadorVendimia;
 import divinaProporcion.modelo.Color;
 
@@ -18,6 +19,7 @@ public class Menu {
 
 	private static Scanner teclado = new Scanner(System.in);
 	private static final String RUTA_VENDIMIA = "datos/vendimia.csv";
+	private static final String RUTA_EXPORTACION = "datos/cosechas.json";
 
 	/**
 	 * Muestra el menú principal y atiende las opciones hasta que se elige salir.
@@ -60,7 +62,7 @@ public class Menu {
 				importarVendimia();
 				break;
 			case 5:
-				exportarProduccion();
+				exportarProduccion(); 
 				break;
 			case 6:
 				generarInformeVentas();
@@ -335,7 +337,17 @@ public class Menu {
 	}
 
 	private static void exportarProduccion() {
-		System.out.println("Exportar Productos");
+		try {
+			if (ExportadorJson.exportar(RUTA_EXPORTACION)) {
+				System.out.println("Exportación completada.");
+			} else {
+				System.out.println("La exportación no se realizó.");
+			}
+		} catch (IOException e) {
+			System.out.println("No se pudo escribir en el fichero: " + e.getMessage());
+		} catch (SQLException e) {
+			System.out.println("Error de BD: " + e.getMessage());
+		}
 	}
 
 	private static void generarInformeVentas() {
