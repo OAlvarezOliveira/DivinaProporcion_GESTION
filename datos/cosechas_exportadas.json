@@ -1,0 +1,86 @@
+[
+  {
+    "parcela": "El Carrascal",
+    "anualidad": 2023,
+    "cantidad": 15200.0,
+    "graduacion": 14.3
+  },
+  {
+    "parcela": "El Carrascal",
+    "anualidad": 2024,
+    "cantidad": 16100.0,
+    "graduacion": 14.7
+  },
+  {
+    "parcela": "El Cerrado",
+    "anualidad": 2022,
+    "cantidad": 27000.0,
+    "graduacion": 14.2
+  },
+  {
+    "parcela": "El Cerrado",
+    "anualidad": 2023,
+    "cantidad": 29500.0,
+    "graduacion": 14.6
+  },
+  {
+    "parcela": "El Cerrado",
+    "anualidad": 2024,
+    "cantidad": 26800.0,
+    "graduacion": 14.4
+  },
+  {
+    "parcela": "La Cañada",
+    "anualidad": 2023,
+    "cantidad": 7200.0,
+    "graduacion": 13.5
+  },
+  {
+    "parcela": "La Cañada",
+    "anualidad": 2024,
+    "cantidad": 7600.0,
+    "graduacion": 13.8
+  },
+  {
+    "parcela": "Los Cantos",
+    "anualidad": 2022,
+    "cantidad": 21000.0,
+    "graduacion": 12.5
+  },
+  {
+    "parcela": "Los Cantos",
+    "anualidad": 2023,
+    "cantidad": 22800.0,
+    "graduacion": 12.8
+  },
+  {
+    "parcela": "Los Cantos",
+    "anualidad": 2024,
+    "cantidad": 20400.0,
+    "graduacion": 12.6
+  },
+  {
+    "parcela": "Los Pozos",
+    "anualidad": 2022,
+    "cantidad": 19500.0,
+    "graduacion": 14.8
+  },
+  {
+    "parcela": "Los Pozos",
+    "anualidad": 2023,
+    "cantidad": 21000.0,
+    "graduacion": 14.5
+  },
+  {
+    "parcela": "Los Pozos",
+    "anualidad": 2024,
+    "cantidad": 18700.0,
+    "graduacion": 14.9
+  },
+  {
+    "parcela": "Valhondo",
+    "anualidad": 2024,
+    "cantidad": 4300.0,
+    "graduacion": 12.2
+  }
+]
