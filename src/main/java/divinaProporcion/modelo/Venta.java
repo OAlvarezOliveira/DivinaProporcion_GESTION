@@ -46,7 +46,7 @@ public class Venta implements Serializable{
 	 }
 	 @Override
 	 public String toString() {
-		return String.format("Venta [id=%d, producto=%s, cantidad=%d, fecha=%s]", id, producto, cantidad, fecha);
+		return String.format("Num.Venta: %d, producto=%s, cantidad=%d, fecha=%s]", id, producto.getNombre(), cantidad, fecha);
 	 }
 
 

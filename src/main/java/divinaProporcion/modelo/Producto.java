@@ -57,8 +57,7 @@ public class Producto implements Serializable{
 
 	@Override
 	public String toString() {
-		return String.format("Producto [id=%d, nombre=%s, cosecha=%s, botellaCantidad=%d]", id, nombre, cosecha,
-				botellaCantidad);
+		return String.format("%d, %s, Produccion inicial: %d", id, nombre, botellaCantidad);
 	}
 
 	 

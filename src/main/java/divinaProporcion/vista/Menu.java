@@ -3,14 +3,19 @@ package divinaProporcion.vista;
 import divinaProporcion.controlador.ControladorCosecha;
 import divinaProporcion.controlador.ControladorParcela;
 import divinaProporcion.controlador.ControladorVariedad;
+import divinaProporcion.dao.DAOProducto;
+import divinaProporcion.dao.DAOVenta;
 import divinaProporcion.io.BackupBinario;
 import divinaProporcion.io.ExportadorJson;
 import divinaProporcion.io.ImportadorJson;
 import divinaProporcion.io.ImportadorVendimia;
 import divinaProporcion.modelo.Color;
+import divinaProporcion.modelo.Producto;
+import divinaProporcion.modelo.Venta;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -42,7 +47,8 @@ public class Menu {
 			System.out.println("6. IMPORTAR COSECHAS (JSON)");
 			System.out.println("7. GENERAR INFORME DE VENTAS ANUAL");
 			System.out.println("8. GENERAR BACKUP DATOS");
-			System.out.println("9. SALIR");
+			System.out.println("9. LISTAR STOCK DE PRODUCTOS");
+			System.out.println("10. SALIR");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -79,8 +85,11 @@ public class Menu {
 				backupDB();
 				break;
 			case 9:
-				System.out.println("EJECUCION FINALIZADA");
+				StockProductos();
 				break;
+			case 10:
+				System.out.println("EJECUCION FINALIZADA");
+				break;	
 			default:
 				System.out.println("Opción no válida. Inténtalo de nuevo.");
 				break;
@@ -373,8 +382,39 @@ public class Menu {
 	}
 
 	private static void generarInformeVentas() {
-		System.out.println("Informe de Ventas");
+			
+			try {
+				System.out.println("Lista de Ventas");
+				List<Venta> lista = DAOVenta.listarVenta();
+				
+				for (Venta v : lista) {
+					
+					System.out.println(v);
+				}
+
+			} catch (SQLException e) {
+				System.out.println("Error de BD: " + e.getMessage());
+
+			}
 	}
+	
+	
+	private static void StockProductos() {
+		
+		try {
+			System.out.println("Productos con Stock");
+			List<Producto> lista = DAOProducto.listarStockProducto();
+			
+			for (Producto v : lista) {
+				
+				System.out.println(v);
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error de BD: " + e.getMessage());
+
+		}
+}
 
 	private static void backupDB() {
 		try {

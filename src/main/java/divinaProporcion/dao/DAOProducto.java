@@ -32,43 +32,78 @@ public class DAOProducto {
 			FROM producto AS pr
 			JOIN cosecha AS c ON pr.id_cosecha = c.id
 			JOIN parcela AS p ON c.id_parcela = p.id
-			JOIN variedad AS v ON p.id_variedad = v.id 
+			JOIN variedad AS v ON p.id_variedad = v.id
 			""";
 
-	public static List<Producto> listarProducto() throws SQLException{
-		
+	private static final String SQL_STOCK = """
+SELECT
+    pr.id,
+    pr.nombre,
+    pr.botellas AS botellasProducto,
+    COALESCE(SUM(v.cantidad), 0) AS botellasVendidas,
+    (pr.botellas - COALESCE(SUM(v.cantidad), 0)) AS Stock
+FROM producto AS pr 
+LEFT JOIN venta AS v ON pr.id = v.id_producto
+GROUP BY pr.id, pr.nombre, pr.botellas 
+								""";
+
+	public static List<Producto> listarProducto() throws SQLException {
+
 		List<Producto> lista = new ArrayList<>();
-		
+
 		try (Connection conexion = ConexionDB.conectaDB();
 				PreparedStatement ps = conexion.prepareStatement(SQL_BASE_PRODUCTO + "ORDER BY pr.nombre");
 				ResultSet rs = ps.executeQuery()) {
-			
+
 			while (rs.next()) {
-				
+
 				lista.add(mapearProducto(rs));
 			}
-			
+
 		}
 		return lista;
-		
-		
-	}
-	
-	 private static Producto mapearProducto(ResultSet rs) throws SQLException {
-		int idProducto = 0;
-		String  nombreProducto = null ;
-		int botellasProducto = 0 ;
-		Cosecha cosecha = null ;
-		
-			 cosecha = DAOCosecha.mapearCosecha(rs);			 
-			 idProducto = rs.getInt("idProducto");
-			 nombreProducto = rs.getString("nombreProducto");
-			 botellasProducto = rs.getInt("botellasProducto");
-			
 
-		return new Producto(idProducto, nombreProducto,cosecha,botellasProducto);
-		
 	}
 	
-	
+	public static List<Producto> listarStockProducto() throws SQLException {
+
+		List<Producto> lista = new ArrayList<>();
+
+		try (Connection conexion = ConexionDB.conectaDB();
+				PreparedStatement ps = conexion.prepareStatement(SQL_STOCK + "ORDER BY pr.nombre");
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+
+				lista.add(mapearProducto(rs));
+			}
+
+		}
+		return lista;
+
+	}
+
+	static Producto mapearProducto(ResultSet rs) throws SQLException {
+		int idProducto;
+		String nombreProducto;
+		int botellasProducto;
+		Cosecha cosecha;
+
+		cosecha = DAOCosecha.mapearCosecha(rs);
+		idProducto = rs.getInt("idProducto");
+		nombreProducto = rs.getString("nombreProducto");
+		botellasProducto = rs.getInt("botellasProducto");
+
+		return new Producto(idProducto, nombreProducto, cosecha, botellasProducto);
+
+	}
+
+	static int calcularStock(int id) throws SQLException {
+		int idProducto;
+		int stock=0;
+
+		return stock;
+
+	}
+
 }
