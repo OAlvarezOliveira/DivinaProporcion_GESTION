@@ -7,6 +7,13 @@
  * El stock NO se guarda: se calcula como producto.botellas - SUM(venta.cantidad).
  */
 
+/*crear la BBDD y el usuario de la aplicación si no existen (script autosuficiente).
+  Hay que ejecutarlo con un usuario con permisos de administración (root).
+  AVISO: más abajo se borran y recrean las tablas; no lanzar contra una BD con datos a conservar.*/
+CREATE DATABASE IF NOT EXISTS divinaProporcion CHARACTER SET utf8mb4;
+CREATE USER IF NOT EXISTS 'dp'@'%' IDENTIFIED BY 'dp_dev';
+GRANT ALL PRIVILEGES ON divinaProporcion.* TO 'dp'@'%';
+
 /*definir la BBDD a usar*/
 USE divinaProporcion;
 
