@@ -2,20 +2,21 @@ package divinaProporcion.vista;
 
 import divinaProporcion.controlador.ControladorCosecha;
 import divinaProporcion.controlador.ControladorParcela;
+import divinaProporcion.controlador.ControladorProducto;
 import divinaProporcion.controlador.ControladorVariedad;
-import divinaProporcion.dao.DAOProducto;
-import divinaProporcion.dao.DAOVenta;
+import divinaProporcion.controlador.ControladorVenta;
 import divinaProporcion.io.BackupBinario;
 import divinaProporcion.io.ExportadorJson;
 import divinaProporcion.io.ImportadorJson;
 import divinaProporcion.io.ImportadorVendimia;
+import divinaProporcion.io.InformeVentas;
 import divinaProporcion.modelo.Color;
-import divinaProporcion.modelo.Producto;
-import divinaProporcion.modelo.Venta;
-
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 import java.util.Scanner;
 
 /**
@@ -29,6 +30,7 @@ public class Menu {
 	private static final String RUTA_EXPORTACION = "datos/cosechas_exportadas.json";
 	private static final String RUTA_IMPORTACION = "datos/cosechas_importar.json";
 	private static final String RUTA_BACKUP = "datos/backup.bin";
+	private static final String RUTA_INFORME_VENTAS = "datos/informe_ventas.txt";
 
 	/**
 	 * Muestra el menú principal y atiende las opciones hasta que se elige salir.
@@ -36,18 +38,16 @@ public class Menu {
 	public static void menu() {
 		int opcionMenu = -1;
 		do {
-			System.out.println("=========================");
-			System.out.println("BODEGAS DIVINA PROPORCION");
-			System.out.println("====SISTEMA DE GESTION====");
-			System.out.println("1. GESTION PARCELAS");
-			System.out.println("2. GESTION COSECHAS");
-			System.out.println("3. GESTION VARIEDADES");
+			imprimirCabecera("SISTEMA DE GESTION");
+			System.out.println("1. GESTION DE PARCELAS");
+			System.out.println("2. GESTION DE COSECHAS");
+			System.out.println("3. GESTION DE VARIEDADES");
 			System.out.println("4. IMPORTAR VENDIMIA (CSV)");
 			System.out.println("5. EXPORTAR COSECHAS (JSON)");
 			System.out.println("6. IMPORTAR COSECHAS (JSON)");
 			System.out.println("7. GENERAR INFORME DE VENTAS ANUAL");
-			System.out.println("8. GENERAR BACKUP DATOS");
-			System.out.println("9. LISTAR STOCK DE PRODUCTOS");
+			System.out.println("8. BACKUP Y RESTAURAR DATOS");
+			System.out.println("9. GESTION DE VENTAS Y STOCK");
 			System.out.println("10. SALIR");
 			System.out.print("Seleccione una opción: ");
 
@@ -82,19 +82,30 @@ public class Menu {
 				generarInformeVentas();
 				break;
 			case 8:
-				backupDB();
+				gestionBackup();
 				break;
 			case 9:
-				StockProductos();
+				gestionVenta();
 				break;
 			case 10:
 				System.out.println("EJECUCION FINALIZADA");
-				break;	
+				break;
 			default:
 				System.out.println("Opción no válida. Inténtalo de nuevo.");
 				break;
 			}
-		} while (opcionMenu != 9);
+		} while (opcionMenu != 10);
+	}
+
+	/** Cabecera común de todos los menús: título centrado en un ancho fijo. */
+	private static void imprimirCabecera(String titulo) {
+		final int ANCHO = 40;
+		String texto = " " + titulo + " ";
+		int izquierda = (ANCHO - texto.length()) / 2;
+		int derecha = ANCHO - texto.length() - izquierda;
+		System.out.println("=".repeat(ANCHO));
+		System.out.println("BODEGAS DIVINA PROPORCION");
+		System.out.println("=".repeat(izquierda) + texto + "=".repeat(derecha));
 	}
 
 	// ==========================================
@@ -104,12 +115,10 @@ public class Menu {
 	private static void gestionParcela()  {
 		int opcionMenu = -1;
 		do {
-			System.out.println("=========================");
-			System.out.println("BODEGAS DIVINA PROPORCION");
-			System.out.println("====GESTION DE PARCELAS====");
+			imprimirCabecera("GESTION DE PARCELAS");
 			System.out.println("1. CREAR PARCELA");
 			System.out.println(
-					"2. LISTAR PARCELA : FITROS NOMBRE " + "(Filtros disponibles: Extension/Variedad/Ubicacion)");
+					"2. LISTAR PARCELAS (filtros: nombre/extension/variedad/ubicacion)");
 			System.out.println("3. EDITAR PARCELA");
 			System.out.println("4. BORRAR PARCELA");
 			System.out.println("5. VOLVER AL MENÚ PRINCIPAL");
@@ -182,9 +191,7 @@ public class Menu {
 	private static void gestionCosecha() {
 		int opcionMenu = -1;
 		do {
-			System.out.println("=========================");
-			System.out.println("BODEGAS DIVINA PROPORCION");
-			System.out.println("====GESTION DE COSECHAS====");
+			imprimirCabecera("GESTION DE COSECHAS");
 			System.out.println("1. CREAR COSECHA");
 			System.out.println("2. LISTAR COSECHAS");
 			System.out.println("3. EDITAR COSECHA");
@@ -269,9 +276,7 @@ public class Menu {
 	private static void gestionVariedad() {
 		int opcionMenu = -1;
 		do {
-			System.out.println("=========================");
-			System.out.println("BODEGAS DIVINA PROPORCION");
-			System.out.println("===GESTION DE VARIEDADES===");
+			imprimirCabecera("GESTION DE VARIEDADES");
 			System.out.println("1. CREAR VARIEDAD");
 			System.out.println("2. LISTAR VARIEDADES");
 			System.out.println("3. EDITAR VARIEDAD");
@@ -335,6 +340,60 @@ public class Menu {
 		} while (opcionMenu != 5);
 	}
 
+	private static void gestionVenta() {
+		int opcionMenu = -1;
+		do {
+			imprimirCabecera("GESTION DE VENTAS");
+			System.out.println("1. LISTAR PRODUCTOS CON STOCK");
+			System.out.println("2. REGISTRAR VENTA");
+			System.out.println("3. LISTAR VENTAS");
+			System.out.println("4. VOLVER AL MENÚ PRINCIPAL");
+			System.out.print("Seleccione una opción: ");
+
+			try {
+				opcionMenu = Integer.parseInt(teclado.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Error: Por favor, introduce un número válido.");
+				opcionMenu = -1;
+				continue;
+			}
+
+			switch (opcionMenu) {
+			case 1:
+				System.out.println(ControladorProducto.listarStock());
+				break;
+			case 2:
+				try {
+					System.out.print("Id del producto: ");
+					int idProducto = Integer.parseInt(teclado.nextLine().trim());
+					System.out.print("Cantidad de botellas: ");
+					int cantidad = Integer.parseInt(teclado.nextLine().trim());
+					if (cantidad <= 0) {
+						System.out.println("La cantidad debe ser mayor que 0.");
+						break;
+					}
+					System.out.print("Fecha (AAAA-MM-DD): ");
+					LocalDate fecha = LocalDate.parse(teclado.nextLine().trim());
+					System.out.println(ControladorVenta.registrar(idProducto, cantidad, fecha));
+				} catch (NumberFormatException e) {
+					System.out.println("Número no válido.");
+				} catch (DateTimeParseException e) {
+					System.out.println("Fecha no válida, usa AAAA-MM-DD.");
+				}
+				break;
+			case 3:
+				System.out.println(ControladorVenta.listar());
+				break;
+			case 4:
+				System.out.println("VOLVIENDO AL MENÚ PRINCIPAL...");
+				break;
+			default:
+				System.out.println("Opción no válida. Inténtalo de nuevo.");
+				break;
+			}
+		} while (opcionMenu != 4);
+	}
+
 	// ==========================================
 	// PROCESOS AUXILIARES Y REPORTES
 	// ==========================================
@@ -382,39 +441,78 @@ public class Menu {
 	}
 
 	private static void generarInformeVentas() {
-			
-			try {
-				System.out.println("Lista de Ventas");
-				List<Venta> lista = DAOVenta.listarVenta();
-				
-				for (Venta v : lista) {
-					
-					System.out.println(v);
-				}
-
-			} catch (SQLException e) {
-				System.out.println("Error de BD: " + e.getMessage());
-
-			}
-	}
-	
-	
-	private static void StockProductos() {
 		
 		try {
-			System.out.println("Productos con Stock");
-			List<Producto> lista = DAOProducto.listarStockProducto();
-			
-			for (Producto v : lista) {
-				
-				System.out.println(v);
-			}
+			InformeVentas.generar(RUTA_INFORME_VENTAS);
+			System.out.println("Informe generado en " + RUTA_INFORME_VENTAS);
+		} catch (IOException e) {
+			System.out.println("No se pudo escribir el informe: " + e.getMessage());
 
 		} catch (SQLException e) {
 			System.out.println("Error de BD: " + e.getMessage());
 
 		}
-}
+	}
+		
+
+	private static void gestionBackup() {
+		int opcionMenu = -1;
+		do {
+			imprimirCabecera("BACKUP DE DATOS");
+			System.out.println("1. GENERAR BACKUP");
+			System.out.println("2. RESTAURAR BACKUP");
+			System.out.println("3. VOLVER AL MENÚ PRINCIPAL");
+			System.out.print("Seleccione una opción: ");
+
+			try {
+				opcionMenu = Integer.parseInt(teclado.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Error: Por favor, introduce un número válido.");
+				opcionMenu = -1;
+				continue;
+			}
+
+			switch (opcionMenu) {
+			case 1:
+				backupDB();
+				break;
+			case 2:
+				restaurarDB();
+				break;
+			case 3:
+				System.out.println("VOLVIENDO AL MENÚ PRINCIPAL...");
+				break;
+			default:
+				System.out.println("Opción no válida. Inténtalo de nuevo.");
+				break;
+			}
+		} while (opcionMenu != 3);
+	}
+
+	private static void restaurarDB() {
+		if (!new File(RUTA_BACKUP).exists()) {
+			System.out.println("No existe el fichero de backup (" + RUTA_BACKUP + "). Genera uno primero.");
+			return;
+		}
+		System.out.print("Esto borrará los datos actuales y los sustituirá por los del backup. ¿Continuar? (s/n): ");
+		if (!teclado.nextLine().trim().equalsIgnoreCase("s")) {
+			System.out.println("Restauración cancelada.");
+			return;
+		}
+		try {
+			if (BackupBinario.restaurar(RUTA_BACKUP)) {
+				System.out.println("Backup restaurado.");
+			} else {
+				System.out.println("No se pudo restaurar el backup.");
+			}
+		} catch (IOException e) {
+			System.out.println("No se pudo leer el backup: " + e.getMessage());
+		} catch (ClassNotFoundException e) {
+			System.out.println("El backup no es compatible con esta versión: " + e.getMessage());
+		} catch (SQLException e) {
+			System.out.println("Error de BD, no se ha modificado nada: " + e.getMessage());
+		}
+	}
 
 	private static void backupDB() {
 		try {
