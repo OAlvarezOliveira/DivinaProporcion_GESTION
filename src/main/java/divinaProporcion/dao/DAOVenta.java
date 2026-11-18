@@ -8,39 +8,36 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import divinaProporcion.modelo.Cosecha;
-import divinaProporcion.modelo.Producto;
+import divinaProporcion.modelo.LineaInforme;
 import divinaProporcion.modelo.Venta;
 
 public class DAOVenta {
 
 	private static final String SQL_BASE_VENTA = """
 			SELECT
-			    pr.id AS idPRODUCTO,
-			    pr.nombre AS NombrePRODUCTO,
-			    pr.id_cosecha AS idCOSECHA,
-			    pr.botellas AS botellasPRODUCTO,
-			    v.id AS IDVenta,
+			    v.id AS idVenta,
+			    v.id_producto AS idProducto,
+			    pr.nombre AS nombreProducto,
 			    v.cantidad AS cantidadVenta,
-			    v.fecha AS FechaVenta,
-			    ch.id AS idCosecha,
-			    ch.anualidad AS anualidadCosecha,
-				ch.cantidad AS cantidadCosecha,
-				ch.graduacion AS graduacionCosecha,
-						        par.id AS idParcela,
-					        par.nombre AS nombreParcela,
-					        par.extension AS extensionParcela,
-					        par.ubicacion AS ubicacionParcela,
-					        		        var.id AS idVariedad,
-					        var.nombre AS nombreVariedad,
-					        var.color AS colorVariedad
+			    v.fecha AS fechaVenta
 			FROM venta v
 			JOIN producto pr ON v.id_producto = pr.id
-			JOIN cosecha ch ON ch.id = pr.id_cosecha
-			JOIN parcela par ON ch.id_parcela = par.id
-			JOIN variedad var ON par.id_variedad = var.id
+			""";
 
-					    """;
+	private static final String SQL_INSERTAR_VENTA = """
+			INSERT INTO venta (id_producto, cantidad, fecha) VALUES (?, ?, ?)
+						""";
+
+	private static final String SQL_INFORME_VENTAS = """
+			SELECT YEAR(v.fecha) as anio,
+			pr.nombre AS nombreProducto,
+			SUM(v.cantidad) as cantidadTotal,
+			COUNT(v.id ) as VentasTotales
+			FROM venta v
+						JOIN producto pr ON v.id_producto = pr.id
+						GROUP BY YEAR(v.fecha), pr.id, pr.nombre
+						ORDER BY anio, nombreProducto ,pr.id
+						""";
 
 	public static List<Venta> listarVenta() throws SQLException {
 
@@ -53,7 +50,7 @@ public class DAOVenta {
 			while (rs.next()) {
 
 				lista.add(mapearProducto(rs));
-				
+
 			}
 
 		}
@@ -62,23 +59,85 @@ public class DAOVenta {
 	}
 
 	private static Venta mapearProducto(ResultSet rs) throws SQLException {
-		
-		
-		//public Venta(int id, Producto producto, int cantidad, LocalDate fecha)
+
+		// public Venta(int id, int idProducto, String nombreProducto,int cantidad,
+		// LocalDate fecha) {
 		int id;
-		Producto producto;
+		int idProducto;
+		String nombreProducto;
 		int cantidad;
 		LocalDate fecha = null;
 
-		producto = DAOProducto.mapearProducto(rs);
 		id = rs.getInt("IDVenta");
+		idProducto = rs.getInt("idProducto");
+		nombreProducto = rs.getString("nombreProducto");
 		cantidad = rs.getInt("cantidadVenta");
 		java.sql.Date sqlDate = rs.getDate("FechaVenta");
 		if (sqlDate != null) {
-		    fecha = sqlDate.toLocalDate();
+			fecha = sqlDate.toLocalDate();
 		}
 
-		return new Venta( id, producto, cantidad, fecha);
+		return new Venta(id, idProducto, nombreProducto, cantidad, fecha);
+
+	}
+
+	public static void registrarVenta(Venta venta) throws SQLException {
+
+		try (Connection conexion = ConexionDB.conectaDB()) {
+			// transacción: comprobar el stock y registrar la venta se hacen juntos o no se
+			// hace nada
+			conexion.setAutoCommit(false);
+
+			try {
+				int stock = DAOProducto.calcularStock(conexion, venta.getIdProducto());
+
+				if (stock == -1) {
+					throw new IllegalArgumentException("Producto inexistente");
+				} else if (venta.getCantidad() > stock) {
+
+					throw new IllegalArgumentException("Stock insuficiente: quedan " + stock);
+
+				} else {
+					try (PreparedStatement ps = conexion.prepareStatement(SQL_INSERTAR_VENTA)) {
+
+						ps.setInt(1, venta.getIdProducto());
+						ps.setInt(2, venta.getCantidad());
+						ps.setDate(3, java.sql.Date.valueOf(venta.getFecha()));
+						ps.executeUpdate();
+					}
+					conexion.commit();
+				}
+
+			} catch (SQLException | RuntimeException e) {
+				conexion.rollback();
+				throw e;
+			}
+
+		}
+
+	}
+
+	public static List<LineaInforme> informeVentas() throws SQLException {
+
+		List<LineaInforme> lista = new ArrayList<>();
+
+		try (Connection conexion = ConexionDB.conectaDB();
+				PreparedStatement ps = conexion.prepareStatement(SQL_INFORME_VENTAS);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+
+				int anio = rs.getInt("anio");
+				String nombreProducto = rs.getString("nombreProducto");
+				int cantidadTotal = rs.getInt("cantidadTotal");
+				int numVentas = rs.getInt("ventasTotales");
+
+				lista.add(new LineaInforme(anio, nombreProducto, cantidadTotal, numVentas));
+
+			}
+
+		}
+		return lista;
 
 	}
 

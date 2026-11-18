@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import divinaProporcion.modelo.Cosecha;
 import divinaProporcion.modelo.Producto;
 
 public class DAOProducto {
@@ -36,16 +35,25 @@ public class DAOProducto {
 			""";
 
 	private static final String SQL_STOCK = """
-SELECT
-    pr.id,
-    pr.nombre,
-    pr.botellas AS botellasProducto,
-    COALESCE(SUM(v.cantidad), 0) AS botellasVendidas,
-    (pr.botellas - COALESCE(SUM(v.cantidad), 0)) AS Stock
-FROM producto AS pr 
-LEFT JOIN venta AS v ON pr.id = v.id_producto
-GROUP BY pr.id, pr.nombre, pr.botellas 
-								""";
+			SELECT
+			    pr.id AS idProducto,
+			    pr.nombre AS nombreProducto,
+			    pr.id_cosecha AS idCosecha,
+			    pr.botellas AS botellasProducto,
+			    COALESCE(SUM(v.cantidad), 0) AS botellasVendidas,
+			    (pr.botellas - COALESCE(SUM(v.cantidad), 0)) AS Stock
+
+			FROM producto AS pr
+			LEFT JOIN venta AS v ON pr.id = v.id_producto
+			GROUP BY pr.id, pr.nombre, pr.botellas
+											""";
+
+	private static final String SQL_BOTELLAS_DISPONIBLES = """
+			SELECT
+			pr.botellas - COALESCE(SUM(v.cantidad), 0) AS stock
+			FROM producto pr
+			LEFT JOIN venta v ON v.id_producto = pr.id WHERE pr.id = ? GROUP BY pr.id
+			   """;
 
 	public static List<Producto> listarProducto() throws SQLException {
 
@@ -64,7 +72,7 @@ GROUP BY pr.id, pr.nombre, pr.botellas
 		return lista;
 
 	}
-	
+
 	public static List<Producto> listarStockProducto() throws SQLException {
 
 		List<Producto> lista = new ArrayList<>();
@@ -75,7 +83,9 @@ GROUP BY pr.id, pr.nombre, pr.botellas
 
 			while (rs.next()) {
 
-				lista.add(mapearProducto(rs));
+				Producto p = mapearProducto(rs);
+				p.setStock(rs.getInt("stock"));
+				lista.add(p);
 			}
 
 		}
@@ -87,22 +97,51 @@ GROUP BY pr.id, pr.nombre, pr.botellas
 		int idProducto;
 		String nombreProducto;
 		int botellasProducto;
-		Cosecha cosecha;
+		int idCosecha;
 
-		cosecha = DAOCosecha.mapearCosecha(rs);
 		idProducto = rs.getInt("idProducto");
 		nombreProducto = rs.getString("nombreProducto");
+		idCosecha = rs.getInt("idCosecha");
 		botellasProducto = rs.getInt("botellasProducto");
 
-		return new Producto(idProducto, nombreProducto, cosecha, botellasProducto);
+		return new Producto(idProducto, nombreProducto, idCosecha, botellasProducto);
 
 	}
 
 	static int calcularStock(int id) throws SQLException {
-		int idProducto;
-		int stock=0;
 
-		return stock;
+		try (Connection conexion = ConexionDB.conectaDB();
+				PreparedStatement ps = conexion.prepareStatement(SQL_BOTELLAS_DISPONIBLES)) {
+			int stock = -1;
+			ps.setInt(1, id);
+			try (ResultSet rs = ps.executeQuery()) {
+
+				if (rs.next()) {
+
+					stock = rs.getInt("stock");
+				}
+			}
+
+			return stock;
+		}
+
+	}
+	
+	static int calcularStock  (Connection conexion, int id) throws SQLException {
+
+		try (PreparedStatement ps = conexion.prepareStatement(SQL_BOTELLAS_DISPONIBLES)) {
+			int stock = -1;
+			ps.setInt(1, id);
+			try (ResultSet rs = ps.executeQuery()) {
+
+				if (rs.next()) {
+
+					stock = rs.getInt("stock");
+				}
+			}
+
+			return stock;
+		}
 
 	}
 

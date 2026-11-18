@@ -4,11 +4,12 @@ import java.io.Serializable;
 
 public class Producto implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String nombre;
-	private Cosecha cosecha; 
+	private int idCosecha;
 	private int botellaCantidad;
-	
+	private int stock;
 	
 	
 	
@@ -16,11 +17,12 @@ public class Producto implements Serializable{
 
 	}
 	
-	public Producto(int id, String nombre, Cosecha cosecha, int botellaCantidad) {
+	public Producto(int id, String nombre, int idCosecha, int botellaCantidad) {
 		this.id = id;
 		this.nombre = nombre;
-		this.cosecha = cosecha;
+		this.idCosecha = idCosecha;
 		this.botellaCantidad = botellaCantidad;
+		this.stock = botellaCantidad;
 	}
 
 	public int getId() {
@@ -29,6 +31,14 @@ public class Producto implements Serializable{
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
 	}
 
 	public String getNombre() {
@@ -39,12 +49,12 @@ public class Producto implements Serializable{
 		this.nombre = nombre;
 	}
 
-	public Cosecha getCosecha() {
-		return cosecha;
+	public int getIdCosecha() {
+		return idCosecha;
 	}
 
-	public void setCosecha(Cosecha cosecha) {
-		this.cosecha = cosecha;
+	public void setIdCosecha(int idCosecha) {
+		this.idCosecha = idCosecha;
 	}
 
 	public int getBotellaCantidad() {
@@ -57,7 +67,7 @@ public class Producto implements Serializable{
 
 	@Override
 	public String toString() {
-		return String.format("%d, %s, Produccion inicial: %d", id, nombre, botellaCantidad);
+		return String.format("%d, %s, Tirada/stock: %d/%d" , id, nombre, botellaCantidad,stock);
 	}
 
 	 
