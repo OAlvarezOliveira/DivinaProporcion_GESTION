@@ -9,6 +9,11 @@ import java.util.List;
 
 import divinaProporcion.modelo.Producto;
 
+/**
+ * Acceso a datos de la tabla {@code producto}.
+ *
+ * El stock no se guarda: se calcula como las botellas producidas menos la suma de las ventas.
+ */
 public class DAOProducto {
 
 	// Acaba en espacio a propósito: después se le pega "ORDER BY" o "WHERE"
@@ -55,6 +60,12 @@ public class DAOProducto {
 			LEFT JOIN venta v ON v.id_producto = pr.id WHERE pr.id = ? GROUP BY pr.id
 			   """;
 
+	/**
+	 * Lista todos los productos ordenados por nombre.
+	 *
+	 * @return lista de productos (el stock inicial coincide con la tirada)
+	 * @throws SQLException si falla la consulta
+	 */
 	public static List<Producto> listarProducto() throws SQLException {
 
 		List<Producto> lista = new ArrayList<>();
@@ -73,6 +84,12 @@ public class DAOProducto {
 
 	}
 
+	/**
+	 * Lista los productos con su stock real (tirada menos botellas vendidas).
+	 *
+	 * @return lista de productos con el campo {@code stock} calculado
+	 * @throws SQLException si falla la consulta
+	 */
 	public static List<Producto> listarStockProducto() throws SQLException {
 
 		List<Producto> lista = new ArrayList<>();
@@ -93,6 +110,13 @@ public class DAOProducto {
 
 	}
 
+	/**
+	 * Convierte la fila actual del {@code ResultSet} en un {@link Producto}.
+	 *
+	 * @param rs resultado posicionado en una fila válida
+	 * @return el producto de esa fila
+	 * @throws SQLException si falta alguna columna esperada
+	 */
 	static Producto mapearProducto(ResultSet rs) throws SQLException {
 		int idProducto;
 		String nombreProducto;
@@ -108,6 +132,13 @@ public class DAOProducto {
 
 	}
 
+	/**
+	 * Calcula el stock de un producto abriendo su propia conexión.
+	 *
+	 * @param id identificador del producto
+	 * @return botellas disponibles, o {@code -1} si el producto no existe
+	 * @throws SQLException si falla la consulta
+	 */
 	static int calcularStock(int id) throws SQLException {
 
 		try (Connection conexion = ConexionDB.conectaDB();
@@ -127,6 +158,15 @@ public class DAOProducto {
 
 	}
 	
+	/**
+	 * Calcula el stock de un producto con una conexión ya abierta.
+	 * Se usa dentro de una transacción para que la comprobación y la venta compartan conexión.
+	 *
+	 * @param conexion conexión de la transacción en curso
+	 * @param id identificador del producto
+	 * @return botellas disponibles, o {@code -1} si el producto no existe
+	 * @throws SQLException si falla la consulta
+	 */
 	static int calcularStock  (Connection conexion, int id) throws SQLException {
 
 		try (PreparedStatement ps = conexion.prepareStatement(SQL_BOTELLAS_DISPONIBLES)) {

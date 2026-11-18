@@ -11,6 +11,10 @@ import java.util.List;
 import divinaProporcion.modelo.LineaInforme;
 import divinaProporcion.modelo.Venta;
 
+/**
+ * Acceso a datos de la tabla {@code venta}: listado, registro con control de stock
+ * y consulta para el informe anual.
+ */
 public class DAOVenta {
 
 	private static final String SQL_BASE_VENTA = """
@@ -39,6 +43,12 @@ public class DAOVenta {
 						ORDER BY anio, nombreProducto ,pr.id
 						""";
 
+	/**
+	 * Lista todas las ventas con el nombre del producto, ordenadas por id y fecha.
+	 *
+	 * @return lista de ventas
+	 * @throws SQLException si falla la consulta
+	 */
 	public static List<Venta> listarVenta() throws SQLException {
 
 		List<Venta> lista = new ArrayList<>();
@@ -49,7 +59,7 @@ public class DAOVenta {
 
 			while (rs.next()) {
 
-				lista.add(mapearProducto(rs));
+				lista.add(mapearVenta(rs));
 
 			}
 
@@ -58,7 +68,14 @@ public class DAOVenta {
 
 	}
 
-	private static Venta mapearProducto(ResultSet rs) throws SQLException {
+	/**
+	 * Convierte la fila actual del {@code ResultSet} en una {@link Venta}.
+	 *
+	 * @param rs resultado posicionado en una fila válida
+	 * @return la venta de esa fila
+	 * @throws SQLException si falta alguna columna esperada
+	 */
+	private static Venta mapearVenta(ResultSet rs) throws SQLException {
 
 		// public Venta(int id, int idProducto, String nombreProducto,int cantidad,
 		// LocalDate fecha) {
@@ -81,6 +98,14 @@ public class DAOVenta {
 
 	}
 
+	/**
+	 * Registra una venta en una transacción: comprueba el stock y la inserta, o no hace nada.
+	 * Si ocurre cualquier error se deshace con {@code rollback} y se relanza la excepción.
+	 *
+	 * @param venta venta a registrar (producto, cantidad y fecha)
+	 * @throws IllegalArgumentException si el producto no existe o la cantidad supera el stock
+	 * @throws SQLException si falla la base de datos
+	 */
 	public static void registrarVenta(Venta venta) throws SQLException {
 
 		try (Connection conexion = ConexionDB.conectaDB()) {
@@ -117,6 +142,12 @@ public class DAOVenta {
 
 	}
 
+	/**
+	 * Obtiene las ventas agrupadas por año y producto para el informe anual.
+	 *
+	 * @return una línea por año y producto, ordenadas por año y nombre
+	 * @throws SQLException si falla la consulta
+	 */
 	public static List<LineaInforme> informeVentas() throws SQLException {
 
 		List<LineaInforme> lista = new ArrayList<>();

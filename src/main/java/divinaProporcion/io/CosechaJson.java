@@ -1,5 +1,9 @@
 package divinaProporcion.io;
 
+/**
+ * Representación de una cosecha para el intercambio en JSON.
+ * Identifica la parcela por su nombre en lugar de por su id, y admite graduación nula.
+ */
 public class CosechaJson {
 	
 	private String parcela;
@@ -54,7 +58,7 @@ public class CosechaJson {
 
 	@Override
 	public String toString() {
-		return String.format("CosechaJson [parcela=%s, anualidad=%d, cantidad=%.2f, graduacion=%.2f]", parcela, anualidad,
+		return String.format("CosechaJson [parcela=%s, anualidad=%d, cantidad=%.2f, graduacion=%s]", parcela, anualidad,
 				cantidad, graduacion);
 	}
 	

@@ -10,10 +10,23 @@ import java.util.List;
 import divinaProporcion.dao.DAOVenta;
 import divinaProporcion.modelo.LineaInforme;
 
+/**
+ * Genera el informe anual de ventas en un fichero de texto.
+ *
+ * Para cada año lista las botellas y el número de ventas por producto, y cierra con el total anual.
+ */
 public class InformeVentas {
 	
 
 			
+	/**
+	 * Escribe el informe de ventas por año y producto.
+	 *
+	 * @param ruta ruta del fichero de destino
+	 * @return {@code true} si se ha escrito correctamente
+	 * @throws IOException si no se puede escribir el fichero
+	 * @throws SQLException si falla la lectura de la base de datos
+	 */
 	public static boolean generar(String ruta) throws IOException, SQLException{
 		
 		int anioActual = 0;

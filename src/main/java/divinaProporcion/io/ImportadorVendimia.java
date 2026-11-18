@@ -14,8 +14,23 @@ import divinaProporcion.dao.DAOParcela;
 import divinaProporcion.modelo.Cosecha;
 import divinaProporcion.modelo.Parcela;
 
+/**
+ * Importa la vendimia desde un fichero CSV separado por punto y coma.
+ *
+ * Formato por línea: {@code parcela;anualidad;kilos;graduacion}, con cabecera. La graduación puede
+ * ir vacía. Las líneas incorrectas se descartan con un aviso y las válidas se insertan en una única
+ * transacción. Al terminar muestra un resumen por tipo de error.
+ */
 public class ImportadorVendimia {
 
+	/**
+	 * Lee el CSV e inserta las cosechas válidas.
+	 *
+	 * @param ruta ruta del fichero CSV (UTF-8)
+	 * @return {@code true} si se confirmó la transacción, {@code false} si se deshizo por un error de base de datos
+	 * @throws IOException si no se puede leer el fichero
+	 * @throws SQLException si falla la conexión con la base de datos
+	 */
 	public static boolean leer(String ruta) throws IOException, SQLException {
 
 		try (Connection conexion = ConexionDB.conectaDB();

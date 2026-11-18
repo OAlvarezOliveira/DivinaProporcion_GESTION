@@ -13,9 +13,20 @@ import com.google.gson.GsonBuilder;
 import divinaProporcion.dao.DAOCosecha;
 import divinaProporcion.modelo.Cosecha;
 
+/**
+ * Exporta las cosechas de la base de datos a un fichero JSON.
+ */
 public class ExportadorJson {
 	
 	
+	/**
+	 * Escribe todas las cosechas en un fichero JSON con formato legible (UTF-8).
+	 *
+	 * @param ruta ruta del fichero de destino
+	 * @return {@code true} si se ha escrito correctamente
+	 * @throws IOException si no se puede escribir el fichero
+	 * @throws SQLException si falla la lectura de la base de datos
+	 */
 	public static boolean exportar(String ruta) throws IOException, SQLException{
 		
 		List<Cosecha> lista =  DAOCosecha.listarCosecha();

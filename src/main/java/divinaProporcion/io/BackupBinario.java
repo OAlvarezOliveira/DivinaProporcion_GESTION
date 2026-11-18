@@ -20,8 +20,22 @@ import divinaProporcion.modelo.Producto;
 import divinaProporcion.modelo.Variedad;
 import divinaProporcion.modelo.Venta;
 
+/**
+ * Copia de seguridad en fichero binario mediante serialización de objetos.
+ *
+ * El fichero contiene, por este orden, las listas de variedades, parcelas, cosechas,
+ * productos y ventas. La lectura debe seguir el mismo orden que la escritura.
+ */
 public class BackupBinario {
 
+	/**
+	 * Guarda en un fichero binario el contenido actual de las cinco tablas.
+	 *
+	 * @param ruta ruta del fichero de destino
+	 * @return {@code true} si se ha escrito correctamente
+	 * @throws IOException si no se puede escribir el fichero
+	 * @throws SQLException si falla la lectura de la base de datos
+	 */
 	public static boolean guardar(String ruta) throws IOException, SQLException {
 
 		List<Variedad> variedades = DAOVariedad.listarVariedad();
@@ -41,6 +55,17 @@ public class BackupBinario {
 		return true;
 	}
 
+	/**
+	 * Restaura la base de datos a partir de un fichero de backup.
+	 * Lee las cinco listas completas antes de tocar la base de datos, de modo que un fichero
+	 * dañado falla sin modificar nada.
+	 *
+	 * @param ruta ruta del fichero de backup
+	 * @return {@code true} si la restauración se ha completado
+	 * @throws IOException si el fichero no existe o está dañado
+	 * @throws SQLException si falla la base de datos (se deshace la transacción)
+	 * @throws ClassNotFoundException si el fichero contiene una clase desconocida
+	 */
 	@SuppressWarnings("unchecked")
 	public static boolean restaurar(String ruta) throws IOException, SQLException, ClassNotFoundException {
 

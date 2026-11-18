@@ -2,6 +2,12 @@ package divinaProporcion.modelo;
 
 import java.io.Serializable;
 
+/**
+ * Producto embotellado a partir de una cosecha.
+ *
+ * Guarda el id de la cosecha (clave foránea) en lugar del objeto. El stock no se almacena en la base
+ * de datos: se calcula como la tirada menos las botellas vendidas.
+ */
 public class Producto implements Serializable{
 	
 	private static final long serialVersionUID = 1L;

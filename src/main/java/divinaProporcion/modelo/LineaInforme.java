@@ -1,5 +1,8 @@
 package divinaProporcion.modelo;
 
+/**
+ * Línea del informe de ventas: botellas y número de ventas de un producto en un año.
+ */
 public class LineaInforme {
 	
 	private int anio;

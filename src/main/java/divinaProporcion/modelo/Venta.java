@@ -3,6 +3,11 @@ package divinaProporcion.modelo;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+/**
+ * Venta de botellas de un producto en una fecha.
+ *
+ * Guarda el id del producto (clave foránea); el nombre solo se rellena al listar.
+ */
 public class Venta implements Serializable{
 	
 	private static final long serialVersionUID = 1L;

@@ -19,8 +19,23 @@ import divinaProporcion.dao.DAOParcela;
 import divinaProporcion.modelo.Cosecha;
 import divinaProporcion.modelo.Parcela;
 
+/**
+ * Importa cosechas desde un fichero JSON.
+ *
+ * Valida cada cosecha (parcela, cantidad y graduación) y descarta las incorrectas con un aviso.
+ * Las válidas se insertan en una única transacción: si falla la base de datos se deshace todo.
+ * Al terminar muestra un resumen de leídas, insertadas y rechazadas.
+ */
 public class ImportadorJson {
 
+	/**
+	 * Lee el fichero JSON e inserta las cosechas válidas.
+	 *
+	 * @param ruta ruta del fichero JSON (UTF-8)
+	 * @return {@code true} si se confirmó la transacción, {@code false} si se deshizo por un error de base de datos
+	 * @throws IOException si no se puede leer el fichero
+	 * @throws SQLException si falla la conexión con la base de datos
+	 */
 	public static boolean leer(String ruta) throws IOException, SQLException {
 
 		try (Connection conexion = ConexionDB.conectaDB();

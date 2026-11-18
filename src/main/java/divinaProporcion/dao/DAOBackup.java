@@ -12,6 +12,10 @@ import divinaProporcion.modelo.Producto;
 import divinaProporcion.modelo.Variedad;
 import divinaProporcion.modelo.Venta;
 
+/**
+ * Acceso a datos para restaurar la BD completa desde un backup
+ *
+ */
 public class DAOBackup {
 	
 	private static final String SQL_INSERTAR_VARIEDAD = "INSERT INTO variedad (id, nombre, color) VALUES (?, ?, ?)";
@@ -27,7 +31,19 @@ public class DAOBackup {
 	private static final String SQL_BORRAR_VARIEDADES = "DELETE FROM variedad";
 	
 	
-	
+	/**
+	 * Borra todo el contenido de las cinco tablas y lo reinserta , en una sola transacción en caso de fallo rollback
+	 *
+	 * Se borra de venta a variedad y se inserta al revés, por las claves foráneas
+	 * Se conservan los ids originales para que las referencias sigan apuntando a lo mismo.
+	 * 
+	 * @param  variedades  lista de variedades que se insertan con su id original
+	 * @param  parcelas    lista de parcelas a insertar (cada una referencia su variedad)
+	 * @param  cosechas    lista de cosechas a insertar (cada una referencia su parcela)
+	 * @param  productos   lista de productos a insertar (cada una referencia su cosecha)
+	 * @param  ventas      lista de ventas a insertar (cada una referencia su producto)
+	 * @throws SQLException si falla la conexión o alguna sentencia; en ese caso se hace rollback y la BD queda como estaba
+	 */
 	public static void restaurar(List<Variedad> variedades, List<Parcela> parcelas,
 	        List<Cosecha> cosechas, List<Producto> productos, List<Venta> ventas) throws SQLException{
 		
