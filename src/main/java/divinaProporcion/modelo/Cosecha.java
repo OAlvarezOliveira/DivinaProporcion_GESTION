@@ -8,8 +8,10 @@ import java.io.Serializable;
  * La graduación es {@link Double} (y no {@code double}) porque puede ser nula si no se midió.
  * </p>
  */
+
 public class Cosecha implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private int anualidad;
 	private Parcela parcela;
